@@ -1,5 +1,4 @@
 import sys
-import pygame
 import csv
 from player import Character
 from assets import *
@@ -9,7 +8,6 @@ from nuts import Nut
 import random as rd
 
 pygame.init()
-# pygame.mixer.init()
 
 # Constants
 WIDTH, HEIGHT = 1800, 1000
@@ -30,23 +28,27 @@ pygame.display.set_caption("Hammy Stop")
 clock = pygame.time.Clock()
 speed = 5
 font = pygame.font.SysFont('bahnschrift', 60)
+small_title = pygame.transform.scale(title, (600, 100))
 
 # Load impassable tiles from CSV file
-impassable_tiles = set()
-with open('grid_config.csv') as f:
-    reader = csv.reader(f)
-    for y, row in enumerate(reader):
-        for x, cell in enumerate(row):
-            if cell == '1':
-                impassable_tiles.add((x, y))
-
-
 high_score_file = "highscore.txt"
 try:
     with open(high_score_file, "r") as file:
         high_score = int(file.read())
 except FileNotFoundError:
     high_score = 0
+
+impassable_tiles = set()
+if high_score >= 50:
+    current_map = 'secret_map.csv'
+else:
+    current_map = 'grid_config.csv'
+with open(f'{current_map}') as f:
+    reader = csv.reader(f)
+    for y, row in enumerate(reader):
+        for x, cell in enumerate(row):
+            if cell == '1':
+                impassable_tiles.add((x, y))
 
 
 def draw_grid():
@@ -58,7 +60,7 @@ def draw_grid():
             grid_x = (x - 50) // GRID_SIZE
             grid_y = (y - 50) // GRID_SIZE
             if (grid_x, grid_y) in impassable_tiles:
-                window.blit(impassable_tile_image, (x, y))
+                window.blit(impassable_tile_image, (x, y)) # If it's a 1 then it is an impassable tile
             else:
                 pygame.draw.rect(window, PURPLE, rect)  # Draw the filled rectangle
                 pygame.draw.rect(window, BLACK, border_rect, 3)
@@ -76,6 +78,7 @@ def update_display():
     window.blit(player.image, (player.x, player.y))
     for circle in circle_list:
         circle.display_circle(window)
+    window.blit(small_title, (600, 10))
     display_text()
     pygame.display.flip()
 
