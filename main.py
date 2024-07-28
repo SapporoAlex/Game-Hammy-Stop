@@ -9,16 +9,19 @@ from nuts import Nut
 import random as rd
 
 pygame.init()
+# pygame.mixer.init()
 
 # Constants
 WIDTH, HEIGHT = 1800, 1000
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-BARBOX_COLOR = (100, 100, 100)  # Grey color for the background of the bar
+PURPLE = (10, 0, 90)
+COBALT = (10, 0, 200)
 BROWN = (120, 70, 40)
 BEIGE = (200, 150, 120)
 VALUE_COLOR = (15, 190, 255)  # Blue color for the filled portion
 DETECTION_GREEN = (95, 255, 25)
+BARBOX_COLOR = (100, 100, 100)  # Grey color for the background of the bar
 BARBOX_SIZE = (600, 50)
 GRID_SIZE = 100
 
@@ -26,6 +29,7 @@ window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Hammy Stop")
 clock = pygame.time.Clock()
 speed = 5
+font = pygame.font.SysFont('bahnschrift', 60)
 
 # Load impassable tiles from CSV file
 impassable_tiles = set()
@@ -46,7 +50,7 @@ except FileNotFoundError:
 
 
 def draw_grid():
-    window.fill(BEIGE)
+    window.fill(COBALT)
     border_rect = pygame.Rect(50, 100, 1700, 800)
     for x in range(50, WIDTH - 50, GRID_SIZE):
         for y in range(100, HEIGHT - 100, GRID_SIZE):
@@ -56,7 +60,7 @@ def draw_grid():
             if (grid_x, grid_y) in impassable_tiles:
                 window.blit(impassable_tile_image, (x, y))
             else:
-                pygame.draw.rect(window, BROWN, rect)  # Draw the filled rectangle
+                pygame.draw.rect(window, PURPLE, rect)  # Draw the filled rectangle
                 pygame.draw.rect(window, BLACK, border_rect, 3)
 
 
@@ -70,9 +74,8 @@ def update_display():
     for poop in poops:
         window.blit(poop['image'], (poop['x'], poop['y']))
     window.blit(player.image, (player.x, player.y))
-    circle1.display_circle(window, 'a')
-    circle2.display_circle(window, 'b')
-    circle3.display_circle(window, 'c')
+    for circle in circle_list:
+        circle.display_circle(window)
     display_text()
     pygame.display.flip()
 
@@ -86,6 +89,7 @@ def is_impassable(x, y):
 def spawn_poop():
     poop_img = rd.choice(poop_imgs)
     poops.append({'image': poop_img, 'x': player.x, 'y': player.y})
+    poop_sfx.play()
 
 
 def set_timer():
@@ -94,10 +98,9 @@ def set_timer():
 
 
 def display_text():
-    font = pygame.font.Font(None, 70)
-    score_text = font.render(f"SCORE: {score}", True, BROWN)
+    score_text = font.render(f"NUTS: {score}", True, WHITE)
     window.blit(score_text, (50, 30))
-    highscore_text = font.render(f"HI-SCORE: {high_score}", True, BROWN)
+    highscore_text = font.render(f"HI-SCORE: {high_score}", True, WHITE)
     window.blit(highscore_text, ((WIDTH - BARBOX_SIZE[0] / 1.5), 30))
     detection_text = font.render("DETECTION", True, BARBOX_COLOR)
     window.blit(detection_text, ((WIDTH - BARBOX_SIZE[0] - 50), (HEIGHT - 75)))
@@ -112,84 +115,141 @@ def update_high_score(new_score):
         with open(high_score_file, "w") as file:
             file.write(str(high_score))
 
-    def main_menu():
-        in_main = True
-        while in_main:
-            pass
+
+def lose(self):
+    return main_menu()
+
+
+def main_menu():
+    in_main = True
+    while in_main:
+        window.fill(COBALT)
+        menu_rect = pygame.Rect(200, 100, 1400, 700)
+        pygame.draw.rect(window, PURPLE, menu_rect)
+        window.blit(title, (300, 200))
+        menu_text1 = font.render("Press Enter to Play", True, WHITE)
+        menu_text2 = font.render("Press Esc to Quit", True, WHITE)
+        window.blit(menu_text1, (600, 500))
+        window.blit(menu_text2, (600, 600))
+        if score > 0:
+            menu_text3 = font.render(f"You got {score} nuts!", True, WHITE)
+            window.blit(menu_text3, (600, 700))
+        pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_RETURN]:
+            running = True
+            play()
+        elif keys[pygame.K_ESCAPE]:
+            pygame.quit()
+            sys.exit()
 
 
 # Initialize variables
-running = True
-player = Character(50, 400, standing_imgs)
-freeze_bar = Bar(barbox_size=BARBOX_SIZE, barbox_color=BARBOX_COLOR, value_size=BARBOX_SIZE, value_color=VALUE_COLOR, x=50, y=HEIGHT - 75)
-detection_bar = Bar(barbox_size=BARBOX_SIZE, barbox_color=BARBOX_COLOR, value_size=BARBOX_SIZE, value_color=DETECTION_GREEN, x=(WIDTH - BARBOX_SIZE[0] - 50), y=HEIGHT - 75)
-circle1 = Circle('a', WIDTH / 2, HEIGHT / 2)
-circle2 = Circle('b', WIDTH / 2, HEIGHT / 2)
-circle3 = Circle('c', WIDTH / 2, HEIGHT / 2)
-score = 0
-nuts = []
-poops = []
-circle_list = [circle1, circle2, circle3]
+def play():
+    pygame.mixer.music.play(loops=-1)
+    global detection_bar, freeze_bar, poops, running, nuts, circle1, circle2, circle3, score, player, circle_list
+    running = True
+    player = Character(50, 400, standing_imgs)
+    freeze_bar = Bar(barbox_size=BARBOX_SIZE, barbox_color=BARBOX_COLOR, value_size=BARBOX_SIZE,
+                     value_color=VALUE_COLOR, x=50, y=HEIGHT - 75)
+    detection_bar = Bar(barbox_size=BARBOX_SIZE, barbox_color=BARBOX_COLOR, value_size=BARBOX_SIZE,
+                        value_color=DETECTION_GREEN, x=(WIDTH - BARBOX_SIZE[0] - 50), y=HEIGHT - 75)
+    circle1 = Circle('a', WIDTH / 2, HEIGHT / 2)
+    circle2 = Circle('b', WIDTH / 2, HEIGHT / 2)
+    circle3 = Circle('c', WIDTH / 2, HEIGHT / 2)
+    score = 0
+    nuts = []
+    poops = []
+    circle_list = [circle1, circle2, circle3]
 
-set_timer()
-nuts.append(Nut(400, 400))
+    set_timer()
+    nuts.append(Nut(400, 400))
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.USEREVENT:
+                spawn_poop()  # Spawn p1 image when the timer event is triggered
+                set_timer()  # Reset the timer
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        keys = pygame.key.get_pressed()
+        new_x, new_y = player.x, player.y
+        if keys[pygame.K_LEFT] and player.x > 50 and not player.is_frozen:
+            new_x -= speed
+            player.move_left()
+        elif keys[pygame.K_RIGHT] and player.x < (WIDTH - GRID_SIZE - 50) and not player.is_frozen:
+            new_x += speed
+            player.move_right()
+        elif keys[pygame.K_UP] and player.y > 100 and not player.is_frozen:
+            new_y -= speed
+            player.move_up()
+        elif keys[pygame.K_DOWN] and player.y < (HEIGHT - GRID_SIZE - 100) and not player.is_frozen:
+            new_y += speed
+            player.move_down()
+        elif keys[pygame.K_SPACE] and player.freeze_time > 0:
+            player.freeze()
+            player.lower_freeze_time()
+        elif keys[pygame.K_ESCAPE]:
             running = False
-        elif event.type == pygame.USEREVENT:
-            spawn_poop()  # Spawn p1 image when the timer event is triggered
-            set_timer()  # Reset the timer
+        else:
+            player.is_frozen = False
+            player.stand_still()
 
-    keys = pygame.key.get_pressed()
-    new_x, new_y = player.x, player.y
-    if keys[pygame.K_LEFT] and player.x > 50 and not player.is_frozen:
-        new_x -= speed
-        player.move_left()
-    elif keys[pygame.K_RIGHT] and player.x < (WIDTH - GRID_SIZE - 50) and not player.is_frozen:
-        new_x += speed
-        player.move_right()
-    elif keys[pygame.K_UP] and player.y > 100 and not player.is_frozen:
-        new_y -= speed
-        player.move_up()
-    elif keys[pygame.K_DOWN] and player.y < (HEIGHT - GRID_SIZE - 100) and not player.is_frozen:
-        new_y += speed
-        player.move_down()
-    elif keys[pygame.K_SPACE] and player.freeze_time > 0:
-        player.freeze()
-        player.lower_freeze_time()
-    else:
-        player.is_frozen = False
-        player.stand_still()
+        # Check if the new position is impassable before moving the player
+        if not is_impassable(new_x, new_y):
+            player.x, player.y = new_x, new_y
 
-    # Check if the new position is impassable before moving the player
-    if not is_impassable(new_x, new_y):
-        player.x, player.y = new_x, new_y
+        for nut in nuts:
+            if nut.check_collision(player):
+                score += 1
+                nut_sfx.play()
+                update_high_score(score)
+                nuts.remove(nut)
+                player.detection += 5
+                player.freeze_time += 25
+                if player.freeze_time > 100:
+                    player.freeze_time = 100
+                if player.detection > 100:
+                    player.detection = 100
 
-    for nut in nuts:
-        if nut.check_collision(player):
-            score += 1
-            update_high_score(score)
-            nuts.remove(nut)
-            player.detection += 5
-            player.freeze_time += 25
-            if player.freeze_time > 100:
-                player.freeze_time = 100
+        for circle in circle_list:
+            circle.update_rect()
+            if circle.check_collision(player) and not player.is_frozen:
+                player.detection -= 0.5
+                alert_sfx.play()
+                if player.detection < 0:
+                    lose(player)
+            if score >= 10 and len(circle_list) == 3:
+                circle4 = Circle("a", WIDTH / 2, HEIGHT / 2)
+                circle_list.append(circle4)
+            if score >= 20 and len(circle_list) == 4:
+                circle4 = Circle("b", 400, HEIGHT / 2)
+                circle_list.append(circle4)
+            if score >= 30 and len(circle_list) == 5:
+                circle4 = Circle("c", WIDTH / 2, 300)
+                circle_list.append(circle4)
+            if score >= 40 and len(circle_list) == 6:
+                circle4 = Circle("b", 800, HEIGHT / 2)
+                circle_list.append(circle4)
+            if score >= 50 and len(circle_list) == 7:
+                circle4 = Circle("c", WIDTH / 2, 600)
+                circle_list.append(circle4)
 
-    for circle in circle_list:
-        circle.update_rect()
-        if circle.check_collision(player) and not player.is_frozen:
-            player.detection -= 0.5
-            if player.detection < 0:
-                player.lose()
+        if len(nuts) <= 2:
+            nuts.append(Nut(rd.randrange(200, 1500, 100), (rd.randrange(200, 800, 100))))
 
-    if len(nuts) <= 2:
-        nuts.append(Nut(rd.randrange(200, 1500, 100), (rd.randrange(200, 800, 100))))
+        update_display()
+        player.update_image()
+        clock.tick(60)
 
-    update_display()
-    player.update_image()
-    clock.tick(60)
+
+if __name__ == "__main__":
+    score = 0
+    main_menu()
 
 pygame.quit()
 sys.exit()

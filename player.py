@@ -50,6 +50,3 @@ class Character:
     def lower_freeze_time(self):
         if self.freeze_time > 0:
             self.freeze_time -= 0.5
-
-    def lose(self):
-        return main_menu()
