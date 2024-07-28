@@ -9,10 +9,11 @@
 
 - **Grid-based Navigation:** Navigate Hammy through a map, with certain tiles being impassable.
 - **Nut Collection:** Collect nuts to increase the score and manage detection and freeze bars.
-- **Animated Characters and Objects:** Includes an animated hamster and nuts.
-- **Random Events:** Poop spawns randomly on the grid.
+- **Animated Characters and Objects:** Includes an animated hamster, nuts, and searchlights.
+- **Random Events:** Hammy poops randomly.
 - **High Score Tracking:** Keeps track of the highest score achieved.
-- **Red Circles** Stay out of the red circles to avoid detection. Holding space will allow Hammy to avoid detection.
+- **Circles** Stay out of the searchlights (circles) to avoid detection. Holding space will allow Hammy to avoid detection while in a circle.
+- **Incremental Difficulty** After every 10th nut collected, a new searchlight will appear.
 
 ## Installation
 
@@ -47,7 +48,7 @@ Defines the `Nut` class, which represents collectible nuts in the game:
 
 ### `circles.py`
 Defines the `Circle` class, which represents moving circles in the game:
-- Handles circular motion, drawing, and collision detection.
+- Handles motion, drawing, and collision detection.
 
 ### `ui.py`
 Defines the `Bar` class, used for displaying freeze and detection bars:
@@ -58,13 +59,13 @@ Defines the `Character` class, representing the player-controlled character:
 - Handles character animation, movement, freezing, and updating the freeze time and detection.
 
 ### `assets.py`
-Loads and manages game assets, including images for the player, nuts, and other objects.
+Loads and manages game assets, including music, sfx, images for the player, nuts, and other objects.
 
 ## How to Play
 
 - Use the arrow keys to move Hammy around the grid.
 - Collect nuts to increase your score and manage your freeze and detection bars.
-- Avoid impassable tiles and moving circles.
+- Avoid being spotted by searchlights (circles).
 - Press the spacebar to use the freeze ability when needed.
 - Try to achieve the highest score possible!
 
