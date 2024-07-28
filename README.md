@@ -1,6 +1,8 @@
 # Hammy Stop
 
-<img src="https://github.com/SapporoAlex/Game-Hammy-Stop/blob/main/images/preview.jpg" width="500px" height="auto">
+<img src="https://github.com/SapporoAlex/Game-Hammy-Stop/blob/main/images/preview1.jpg" width="500px" height="auto">
+<img src="https://github.com/SapporoAlex/Game-Hammy-Stop/blob/main/images/preview2.jpg" width="500px" height="auto">
+
 **Hammy Stop** is a 2D game developed using Python and Pygame. The player controls a character named Hammy, who must navigate through a grid, collect nuts, avoid impassable tiles, and manage freeze and detection bars to achieve the highest score.
 
 ## Features
