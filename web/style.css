@@ -1,0 +1,172 @@
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #05000f;
+  overflow: hidden;
+  font-family: 'Bahnschrift', 'Segoe UI', 'Arial Narrow', sans-serif;
+  touch-action: none;
+}
+
+#app {
+  display: grid;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  grid-template-areas: "game";
+  gap: 6px;
+}
+
+#game-area {
+  grid-area: game;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#game-canvas {
+  background: #0a00c8;
+  touch-action: none;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.6);
+}
+
+#loading-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: clamp(16px, 3vw, 28px);
+  background: #0a00c8;
+  letter-spacing: 1px;
+}
+
+#loading-screen.hidden {
+  display: none;
+}
+
+#fullscreen-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Touch controls are hidden by default; shown only on touch-capable devices */
+.touch-controls {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  min-width: 0;
+  min-height: 0;
+}
+
+body.touch-device .touch-controls {
+  display: flex;
+}
+
+#controls-left {
+  grid-area: left;
+}
+
+#controls-right {
+  grid-area: right;
+}
+
+#dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas:
+    ".    up    ."
+    "left  .   right"
+    ".   down   .";
+  width: min(38vw, 220px);
+  height: min(38vw, 220px);
+  gap: 4px;
+}
+
+.dpad-btn {
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  background: rgba(15, 190, 255, 0.25);
+  color: #fff;
+  font-size: clamp(18px, 4vw, 28px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+
+.dpad-btn:active,
+.dpad-btn.pressed {
+  background: rgba(15, 190, 255, 0.65);
+}
+
+#btn-up { grid-area: up; }
+#btn-left { grid-area: left; }
+#btn-down { grid-area: down; }
+#btn-right { grid-area: right; }
+
+#btn-freeze {
+  width: min(30vw, 150px);
+  height: min(30vw, 150px);
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  background: rgba(95, 255, 25, 0.25);
+  color: #fff;
+  font-size: clamp(14px, 3vw, 22px);
+  font-weight: bold;
+  letter-spacing: 1px;
+  touch-action: none;
+}
+
+#btn-freeze:active,
+#btn-freeze.pressed {
+  background: rgba(95, 255, 25, 0.6);
+}
+
+/* Portrait / vertical orientation: controls stacked below the canvas */
+body.touch-device.orientation-portrait #app {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+    "game game"
+    "left right";
+}
+
+/* Landscape / horizontal orientation: controls on the left and right sides */
+body.touch-device.orientation-landscape #app {
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: 1fr;
+  grid-template-areas: "left game right";
+}

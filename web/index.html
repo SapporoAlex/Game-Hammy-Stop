@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Hammy Stop</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <div id="controls-left" class="touch-controls">
+    <div id="dpad">
+      <button class="dpad-btn" id="btn-up" data-dir="up" aria-label="Up">▲</button>
+      <button class="dpad-btn" id="btn-left" data-dir="left" aria-label="Left">◀</button>
+      <button class="dpad-btn" id="btn-down" data-dir="down" aria-label="Down">▼</button>
+      <button class="dpad-btn" id="btn-right" data-dir="right" aria-label="Right">▶</button>
+    </div>
+  </div>
+
+  <div id="game-area">
+    <canvas id="game-canvas" width="1800" height="1000"></canvas>
+    <div id="loading-screen">Loading Hammy Stop&hellip;</div>
+    <button id="fullscreen-btn" aria-label="Toggle fullscreen">⛶</button>
+  </div>
+
+  <div id="controls-right" class="touch-controls">
+    <button id="btn-freeze" aria-label="Freeze">FREEZE</button>
+  </div>
+
+</div>
+<script src="game.js"></script>
+</body>
+</html>
